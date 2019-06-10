@@ -1,3 +1,4 @@
+################################################################## EXAMPLE VPC ############################################################
 resource "aws_security_group" "allow_ssh_from_everywhere" {
   name        = "allow_ssh_from_everywhere"
   description = "Allow SSH from everywhere"
@@ -19,6 +20,7 @@ resource "aws_security_group" "allow_ssh_from_everywhere" {
   }
 }
 
+################################################################## DEFAULT VPC ############################################################
 resource "aws_security_group" "allow_ssh_from_everywhere_default" {
   name        = "allow_ssh_from_everywhere_default"
   description = "Allow SSH from everywhere_default"

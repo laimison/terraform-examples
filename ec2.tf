@@ -4,7 +4,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_instance" "example_server" {
+################################################################## EXAMPLE VPC ############################################################
+resource "aws_instance" "server_example_vpc" {
   depends_on = ["aws_internet_gateway.gw"]
   ami = "ami-2757f631"
   instance_type = "t2.micro"
@@ -17,9 +18,14 @@ resource "aws_instance" "example_server" {
     # "default",
   #  "allow_ssh_from_everywhere"
   #]
+
+  tags = {
+    Name = "server_example_vpc"
+  }
 }
 
-resource "aws_instance" "example_server2" {
+################################################################## DEFAULT VPC ############################################################
+resource "aws_instance" "server_default_vpc" {
   ami = "ami-2757f631"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
@@ -29,4 +35,8 @@ resource "aws_instance" "example_server2" {
     "default",
     "allow_ssh_from_everywhere_default"
   ]
+
+  tags = {
+    Name = "server_default_vpc"
+  }
 }
