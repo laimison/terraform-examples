@@ -5,22 +5,6 @@ provider "aws" {
 }
 
 ################################################################## EXAMPLE VPC ############################################################
-#resource "aws_ebs_volume" "my_ebs_volume" {
-#  availability_zone = "us-east-1a"
-#  size              = 1
-#  type = "gp2"
-
-#  tags = {
-#    Name = "my_ebs_volume"
-#  }
-#}
-
-#resource "aws_volume_attachment" "volume_attachment" {
-#  device_name = "/dev/sdh"
-#  volume_id   = "${aws_ebs_volume.my_ebs_volume.id}"
-#  instance_id = "${aws_instance.server_example_vpc.id}"
-#}
-
 resource "aws_instance" "server_example_vpc" {
   # Cannot use us-east-1f because subnet is in us-east-1a
   availability_zone = "us-east-1a"
@@ -42,9 +26,33 @@ resource "aws_instance" "server_example_vpc" {
   #   volume_size = 20
   # }
 
+  user_data = "${file("attach_ebs.sh")}"
+
   tags = {
     Name = "server_example_vpc"
   }
+}
+
+# Create EBS volume
+resource "aws_ebs_volume" "my_ebs_volume" {
+  availability_zone = "us-east-1a"
+  size              = 1
+  type = "gp2"
+
+  tags = {
+    Name = "my_ebs_volume"
+  }
+}
+
+# Attach to VM: server_example_vpc
+resource "aws_volume_attachment" "volume_attachment" {
+  # An example: sdh becomes xvdh on Linux
+  device_name = "/dev/sdh"
+  volume_id   = "${aws_ebs_volume.my_ebs_volume.id}"
+  instance_id = "${aws_instance.server_example_vpc.id}"
+
+  # This is dangerous, but mounted volume cannot be destroyed when destroying VM
+  force_detach = true
 }
 
 ################################################################## DEFAULT VPC ############################################################
