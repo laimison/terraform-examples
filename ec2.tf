@@ -51,8 +51,8 @@ resource "aws_volume_attachment" "volume_attachment" {
   volume_id   = "${aws_ebs_volume.my_ebs_volume.id}"
   instance_id = "${aws_instance.server_example_vpc.id}"
 
-  # This is dangerous, but mounted volume cannot be destroyed when destroying VM
-  # Otherwise, the error is thrown: "Error waiting for Volume (vol-0d7f1f050d86f5a20) to detach from Instance: i-086d6bab259aebf6d"
+  # This is dangerous, but mounted volume cannot be destroyed when destroying VM, because of an error:
+  # "Error waiting for Volume (vol-0d7f1f050d86f5a20) to detach from Instance: i-086d6bab259aebf6d"
   force_detach = true
 }
 
