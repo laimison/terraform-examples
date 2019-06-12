@@ -57,6 +57,10 @@ resource "aws_volume_attachment" "volume_attachment" {
   force_detach = true
 }
 
+output "public_dns" {
+  value = aws_instance.server_example_vpc.public_dns
+}
+
 ################################################################## DEFAULT VPC ############################################################
 resource "aws_instance" "server_default_vpc" {
   ami = "ami-2757f631"
