@@ -1,4 +1,7 @@
 #!/bin/bash
+# One case identified when it didn't format the volume without sleep
+sleep 3
+
 mkfs -t ext4 /dev/xvdh
 mkdir /app
 mount /dev/xvdh /app

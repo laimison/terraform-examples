@@ -13,8 +13,8 @@ resource "aws_instance" "server_example_vpc" {
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet1.id}"
-  security_groups = [ "default" ]
-  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}" ]
+  # security_groups = [ "default" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.example_vpc.default_security_group_id}" ]
 
   # it destroys VM when changing security groups here
   #security_groups = [
