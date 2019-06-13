@@ -5,10 +5,18 @@ provider "aws" {
 }
 
 ################################################################## EXAMPLE VPC ############################################################
+data "template_file" "init" {
+  template = "${file("attach_volumes.sh")}"
+
+  vars = {
+    some_address = "${aws_efs_mount_target.my_efs_mount.dns_name}"
+  }
+}
+
 resource "aws_instance" "server_example_vpc" {
   # Cannot use us-east-1f because subnet is in us-east-1a
   availability_zone = "us-east-1a"
-  depends_on = ["aws_internet_gateway.gw"]
+  depends_on = ["aws_internet_gateway.gw", "aws_efs_mount_target.my_efs_mount"]
   ami = "ami-2757f631"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
@@ -27,7 +35,9 @@ resource "aws_instance" "server_example_vpc" {
   #   volume_size = 20
   # }
 
-  user_data = "${file("attach_ebs.sh")}"
+  # user_data = "${file("attach_volumes.sh")}"
+  # user_data = "${data.template_file.init.rendered}"
+  user_data = "${data.template_file.init.rendered}"
 
   tags = {
     Name = "server_example_vpc"

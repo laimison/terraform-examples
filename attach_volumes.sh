@@ -10,6 +10,8 @@ do
   echo /dev/xvdh  /app ext4 defaults,nofail 0 2 | tee -a /etc/fstab && \
   useradd app -s /bin/bash && \
   chown -R app:app /app && \
+  echo test > /tmp/test && \
+  echo ${some_address} >> /tmp/test2 && \
   break
 
   sleep 1
