@@ -29,8 +29,13 @@ mkdir -p /nfs
 mount -t nfs4 ${some_address}:/ /nfs
 chown -R app:app /nfs
 
+# Some Packages
+yum install -y lsof python36
+
 # Start sample service
-mkdir /tmp/http
-cd /tmp/http
+mkdir -p /tmp/http
 echo "Server is running" > /tmp/http/index.html
-python3 -m http.server -b 0.0.0.0 8080 &
+cd /tmp/http && python3 -m http.server -b 0.0.0.0 8080 &
+
+# Some other stuff
+setenforce 0
