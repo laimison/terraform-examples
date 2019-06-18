@@ -6,7 +6,7 @@ provider "aws" {
 
 ################################################################## EXAMPLE VPC ############################################################
 data "template_file" "init" {
-  template = "${file("attach_volumes.sh")}"
+  template = "${file("ec2-initialise.sh")}"
 
   vars = {
     some_address = "${aws_efs_mount_target.my_efs_mount.dns_name}"
@@ -17,7 +17,10 @@ resource "aws_instance" "server_example_vpc" {
   # Cannot use us-east-1f because subnet is in us-east-1a
   availability_zone = "us-east-1a"
   depends_on = ["aws_internet_gateway.gw", "aws_efs_mount_target.my_efs_mount"]
-  ami = "ami-2757f631"
+  # Ubuntu 16
+  # ami = "ami-2757f631"
+  # Redhat 8
+  ami = "ami-098bb5d92c8886ca1"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet1.id}"
@@ -73,7 +76,10 @@ output "public_dns" {
 
 ################################################################## DEFAULT VPC ############################################################
 resource "aws_instance" "server_default_vpc" {
-  ami = "ami-2757f631"
+  # Ubuntu 16
+  # ami = "ami-2757f631"
+  # Redhat 8
+  ami = "ami-098bb5d92c8886ca1"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
 
