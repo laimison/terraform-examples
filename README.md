@@ -1,6 +1,50 @@
 # Terraform Examples
 
-## Developing Plan
+## Create a First User Through IAM
+
+Go to AWS Console
+
+IAM - add user
+type in your key_name
+Programmatic access
+AWS Management Console access
+Custom password
+Require password reset: no
+
+Administrator Access group: my-admin
+
+## Get Started
+
+```
+cp variables.tf.example variables.tf
+```
+
+* Go to AWS console, IAM section
+
+* Find your key name
+
+* Secret key
+
+* Access key
+
+```
+variable "key_name" {
+  type    = string
+  default = "your-key-name"
+}
+
+variable "secret_key" {
+  type    = string
+  default = "your-secret-key"
+}
+
+variable "access_key" {
+  type    = string
+  default = "your-access-key"
+}
+```
+
+## Some Tips
 
 It's useful to run this in a loop while working
 
