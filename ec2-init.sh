@@ -8,7 +8,7 @@ yum install -y lsof python36
 
 # Start sample service
 mkdir -p /tmp/http
-echo "Server is running" > /tmp/http/index.html
+echo "Server `hostname` reached!" > /tmp/http/index.html
 cd /tmp/http && python3 -m http.server -b 0.0.0.0 8080 &
 
 # Some other stuff
@@ -51,4 +51,4 @@ do
   sleep 5
 done
 
-touch /tmp/initialise-script-finished
+touch /tmp/ec2-init-script-finished

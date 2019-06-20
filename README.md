@@ -1,19 +1,26 @@
 # Terraform Examples
 
-## Create a First User Through IAM
-
-Go to AWS Console
-
-IAM - add user
-type in your key_name
-Programmatic access
-AWS Management Console access
-Custom password
-Require password reset: no
-
-Administrator Access group: my-admin
-
 ## Get Started
+
+### Create User
+
+* Go to AWS Console
+
+* IAM - add user
+
+* type in your key_name
+
+* Programmatic access
+
+* AWS Management Console access
+
+* Custom password
+
+* Require password reset: no
+
+* Administrator Access group: my-admin
+
+### Update Credentials
 
 ```
 cp variables.tf.example variables.tf
@@ -44,34 +51,70 @@ variable "access_key" {
 }
 ```
 
-## Some Tips
-
-It's useful to run this in a loop while working
+## Run it
 
 ```
 while true; do terraform destroy; sleep 3; terraform apply; sleep 3; done
 ```
 
+## Connect to EC2
+
+```
+ssh -i your.key ec2-user@server1
+```
+
+This should have internal and external mounts, /app and /nfs
+
+```
+[ec2-user@ip-10-0-240-192 tmp]$ df -m
+Filesystem                                    1M-blocks  Used     Available Use% Mounted on
+devtmpfs                                            391     0           391   0% /dev
+tmpfs                                               410     0           410   0% /dev/shm
+tmpfs                                               410    11           400   3% /run
+tmpfs                                               410     0           410   0% /sys/fs/cgroup
+/dev/xvda2                                        10228  1122          9107  11% /
+tmpfs                                                82     0            82   0% /run/user/1000
+/dev/xvdh                                           976     3           907   1% /app
+fs-e27d3901.efs.us-east-1.amazonaws.com:/ 8796093022207     0 8796093022207   0% /nfs
+[ec2-user@ip-10-0-240-192 tmp]$
+```
+
 ## Setup Cloudwatch Alarm for Higher Than 0 Estimated Bill in AWS
 
 Cloudwatch
+
 Billing Preferences
+
 Receive PDF Invoice By Email
+
 Receive Free Tier Usage Alerts - your@email.address
+
 Receive Billing Alerts
 
-Cloudwatch
-Billing
-Create Alarm
-EstimatedCharges
-0
-send notification - your@email.address
 
 Cloudwatch
+
 Billing
+
 Create Alarm
-"Total Estimated Charge"
+
+EstimatedCharges
+
 0
+
+send notification - your@email.address
+
+
+Cloudwatch
+
+Billing
+
+Create Alarm
+
+"Total Estimated Charge"
+
+0
+
 send notification - your@email.address
 
 ## References
@@ -87,3 +130,5 @@ Use Bash in Terraform for EBS volumes - http://www.sanjeevnandam.com/blog/ec2-mo
 Mount EFS volume using Bash - https://cwong47.gitlab.io/technology-terraform-aws-efs/
 
 Modularize Terraform - https://coderbook.com/@marcus/how-to-split-and-organize-terraform-code-into-modules/
+
+Book: Terraform Up and Running by Yevgeniy Brikman
