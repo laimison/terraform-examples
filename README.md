@@ -1,8 +1,8 @@
 # Terraform Examples
 
-## Get Started
+Here is some Terraform example to provision basic AWS infrastructure with custom VPC, EC2 instances, ELB, also EBS and EFS volumes.
 
--
+## Get Started
 
 ### Create User
 
