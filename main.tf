@@ -9,6 +9,10 @@ provider "aws" {
 # Declare the data source
 data "aws_availability_zones" "available" {}
 
+# Create S3 bucket to elb logs
+data "aws_elb_service_account" "main" {}
+
+
 data "template_file" "init" {
   template = "${file("ec2-init.sh")}"
 
@@ -194,6 +198,33 @@ output "efs_dns_name" {
   value = "${aws_efs_mount_target.my_efs_mount.dns_name}"
 }
 
+#################################################### S3 ####################################################
+resource "aws_s3_bucket" "elb_logs" {
+  bucket = "my-elb-tf-test-bucket-321"
+  acl    = "private"
+
+  policy = <<POLICY
+{
+  "Id": "Policy",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::my-elb-tf-test-bucket-321/AWSLogs/*",
+      "Principal": {
+        "AWS": [
+          "${data.aws_elb_service_account.main.arn}"
+        ]
+      }
+    }
+  ]
+}
+POLICY
+}
+
 ################################################### ELB ####################################################
 resource "aws_elb" "my-elb" {
   name               = "my-terraform-elb"
@@ -212,12 +243,10 @@ resource "aws_elb" "my-elb" {
 
   internal = false
 
-  #access_logs {
-  #(Required) The S3 bucket name to store the logs in
-  #  bucket        = "foo"
-  #  bucket_prefix = "bar"
-  #  interval      = 60
-  #}
+  access_logs {
+    bucket        = "${aws_s3_bucket.elb_logs.bucket}"
+    interval      = 5
+  }
 
   listener {
     instance_port     = 8080
