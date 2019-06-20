@@ -76,6 +76,22 @@ Apache server ip-10-0-105-163.ec2.internal reached!
 mac:~ $
 ```
 
+## How volumes work
+
+```
+[ec2-user@ip-10-0-168-252 ~]$ df -m
+Filesystem                                    1M-blocks  Used     Available Use% Mounted on
+devtmpfs                                            391     0           391   0% /dev
+tmpfs                                               410     0           410   0% /dev/shm
+tmpfs                                               410    11           400   3% /run
+tmpfs                                               410     0           410   0% /sys/fs/cgroup
+/dev/xvda2                                        10228  1138          9091  12% /
+/dev/xvdh                                           976     3           907   1% /app
+fs-d3c78030.efs.us-east-1.amazonaws.com:/ 8796093022207     0 8796093022207   0% /nfs
+tmpfs                                                82     0            82   0% /run/user/1000
+[ec2-user@ip-10-0-168-252 ~]$
+```
+
 ## Output
 
 ```
