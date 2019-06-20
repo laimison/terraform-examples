@@ -4,15 +4,36 @@
 useradd app -s /bin/bash
 
 # Some Packages
-yum install -y lsof python36
+yum install -y lsof python36 firewalld nc httpd
 
-# Start sample service
-mkdir -p /tmp/http
-echo "Server `hostname` reached!" > /tmp/http/index.html
-cd /tmp/http && python3 -m http.server -b 0.0.0.0 8080 &
+# Start HTTP service
+# A bit messy, but added just for the test
 
-# Some other stuff
+# mkdir -p /tmp/http
+# cd /tmp/http && nohup python3 -m http.server -b 0.0.0.0 8080 &
+# nohup busybox httpd -f -p 8080 &
+
+echo "Apache server `hostname` reached!" > /usr/share/httpd/noindex/index.html
+
+sed -i "s|^Listen 80$|Listen 8080|g" /etc/httpd/conf/httpd.conf
+
+systemctl start httpd
+systemctl enable httpd
+
+# Firewall
+sleep 5
+# systemctl start firewalld
+# systemctl enable firewalld
+systemctl stop firewalld
+systemctl disable firewalld
+
+# firewall-cmd --zone=public --add-port=8080/tcp --permanent
+# firewall-cmd --reload
+
+# selinux stuff
 setenforce 0
+sed -i -e "s/^SELINUX.*$/SELINUX=disabled/" /etc/selinux/config
+# shutdown -r now
 
 # Wait until internal storage is provisioned
 for i in `seq 1 60`

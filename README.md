@@ -54,7 +54,39 @@ variable "access_key" {
 ## Run it
 
 ```
-while true; do terraform destroy; sleep 3; terraform apply; sleep 3; done
+terraform apply
+terraform destroy
+```
+
+or useful for tests to start from scratch - and take a break :)
+
+```
+terraform destroy -auto-approve && terraform apply -auto-approve
+```
+
+## How ELB works
+
+```
+mac:~ $ curl http://my-terraform-elb-227091730.us-east-1.elb.amazonaws.com
+Apache server ip-10-0-178-82.ec2.internal reached!
+mac:~ $ curl http://my-terraform-elb-227091730.us-east-1.elb.amazonaws.com
+Apache server ip-10-0-178-82.ec2.internal reached!
+mac:~ $ curl http://my-terraform-elb-227091730.us-east-1.elb.amazonaws.com
+Apache server ip-10-0-105-163.ec2.internal reached!
+mac:~ $
+```
+
+## Output
+
+```
+Apply complete! Resources: 19 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+efs_dns_name = fs-42b1f6a1.efs.us-east-1.amazonaws.com
+elb_dns = my-terraform-elb-633456504.us-east-1.elb.amazonaws.com
+public_dns = ec2-54-162-71-214.compute-1.amazonaws.com
+public_dns2 = ec2-3-80-248-69.compute-1.amazonaws.com
 ```
 
 ## Connect to EC2

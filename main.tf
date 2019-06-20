@@ -88,7 +88,7 @@ resource "aws_instance" "server1" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet1.id}"
   # security_groups = [ "default" ]
-  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_8080_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
 
   user_data = "${data.template_file.init.rendered}"
 
@@ -114,7 +114,7 @@ resource "aws_instance" "server2" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet1.id}"
   # security_groups = [ "default" ]
-  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_8080_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
 
   user_data = "${data.template_file.init.rendered}"
 
@@ -203,6 +203,9 @@ resource "aws_s3_bucket" "elb_logs" {
   bucket = "my-elb-tf-test-bucket-321"
   acl    = "private"
 
+  # Dangerous
+  force_destroy = true
+
   policy = <<POLICY
 {
   "Id": "Policy",
@@ -266,11 +269,11 @@ resource "aws_elb" "my-elb" {
 
   health_check {
     healthy_threshold   = 2
-    # normal is 2, but 10 for the test
-    unhealthy_threshold = 10
+    unhealthy_threshold = 5
     timeout             = 3
-    target              = "HTTP:8080/"
-    interval            = 30
+    # target            = "HTTP:8080/"
+    target              = "TCP:8080"
+    interval            = 10
   }
 
   instances                   = ["${aws_instance.server1.id}", "${aws_instance.server2.id}"]
@@ -370,5 +373,25 @@ resource "aws_security_group" "elb1" {
 
   tags = {
     Name = "elb1"
+  }
+}
+
+resource "aws_security_group" "allow_8080_from_everywhere" {
+  name        = "allow_8080_from_everywhere"
+  description = "allow_8080_from_everywhere"
+  vpc_id      = "${aws_vpc.vpc1.id}"
+
+  # Inline rule
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    # Please restrict your ingress to only necessary IPs and ports.
+    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
+    cidr_blocks = [ "0.0.0.0/0" ] # add a CIDR block here
+  }
+
+  tags = {
+    Name = "allow_8080_from_everywhere"
   }
 }
