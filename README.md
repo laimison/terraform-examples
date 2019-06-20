@@ -2,7 +2,7 @@
 
 Here is some Terraform example to provision basic AWS infrastructure with custom VPC, EC2 instances, ELB, also EBS and EFS volumes.
 
-As of June, 2019, the code is not modularised, not managed state if managed by multiple developers and considered as very initial version.
+As of June, 2019, the code is not modularised, no state management for more than one developer working with git and considered as very initial version.
 
 ## Get Started
 
