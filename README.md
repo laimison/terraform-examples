@@ -2,6 +2,8 @@
 
 ## Get Started
 
+-
+
 ### Create User
 
 * Go to AWS Console
