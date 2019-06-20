@@ -96,7 +96,9 @@ tmpfs                                                82     0            82   0%
 [ec2-user@ip-10-0-168-252 ~]$
 ```
 
-## Output
+## Output
+
+Terraform output variables
 
 ```
 Apply complete! Resources: 19 added, 0 changed, 0 destroyed.
@@ -113,22 +115,6 @@ public_dns2 = ec2-3-80-248-69.compute-1.amazonaws.com
 
 ```
 ssh -i your.key ec2-user@server1
-```
-
-This should have internal and external mounts, /app and /nfs
-
-```
-[ec2-user@ip-10-0-240-192 tmp]$ df -m
-Filesystem                                    1M-blocks  Used     Available Use% Mounted on
-devtmpfs                                            391     0           391   0% /dev
-tmpfs                                               410     0           410   0% /dev/shm
-tmpfs                                               410    11           400   3% /run
-tmpfs                                               410     0           410   0% /sys/fs/cgroup
-/dev/xvda2                                        10228  1122          9107  11% /
-tmpfs                                                82     0            82   0% /run/user/1000
-/dev/xvdh                                           976     3           907   1% /app
-fs-e27d3901.efs.us-east-1.amazonaws.com:/ 8796093022207     0 8796093022207   0% /nfs
-[ec2-user@ip-10-0-240-192 tmp]$
 ```
 
 ## Setup Cloudwatch Alarm for Higher Than 0 Estimated Bill in AWS
