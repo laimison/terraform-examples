@@ -95,7 +95,7 @@ resource "aws_route" "my_route" {
 #################################################### EC2 ###################################################
 #### SERVER1 ####
 resource "aws_instance" "server1" {
-  # Cannot use us-east-1f because subnet is in us-east-1a
+  # Check if subnet is in the same zone
   availability_zone = "us-east-1a"
   depends_on = ["aws_internet_gateway.gw", "aws_efs_mount_target.my_efs_mount"]
   # Redhat 8
@@ -119,8 +119,8 @@ output "public_dns" {
 
 #### SERVER2 ####
 resource "aws_instance" "server2" {
-  # Cannot use us-east-1f because subnet is in us-east-1a
-  availability_zone = "us-east-1a"
+  # Check if subnet is in the same zone
+  availability_zone = "us-east-1b"
   depends_on = ["aws_internet_gateway.gw"]
   # Ubuntu 16
   # ami = "ami-2757f631"
@@ -169,7 +169,7 @@ resource "aws_volume_attachment" "volume_attachment" {
 #### SERVER2 ####
 # Create EBS volume
 resource "aws_ebs_volume" "my_ebs_volume2" {
-  availability_zone = "us-east-1a"
+  availability_zone = "us-east-1b"
   size              = 1
   type = "gp2"
 
@@ -258,7 +258,7 @@ resource "aws_elb" "my-elb" {
   # A list of subnet IDs in your virtual private cloud (VPC) to attach to your load balancer. Do not specify multiple subnets that are in the same Availability Zone.
   # You can specify the AvailabilityZones or Subnets property, but not both.
   # availability_zones = ["us-east-1a"]
-  subnets = [ "${aws_subnet.subnet1.id}" ]
+  subnets = [ "${aws_subnet.subnet1.id}", "${aws_subnet.subnet2.id}" ]
 
   internal = false
 
@@ -295,7 +295,7 @@ resource "aws_elb" "my-elb" {
   instances                   = ["${aws_instance.server1.id}", "${aws_instance.server2.id}"]
 
   # Enable cross-zone load balancing. Default: true
-  cross_zone_load_balancing   = false
+  cross_zone_load_balancing   = true
 
   # The time in seconds that the connection is allowed to be idle
   idle_timeout                = 400
