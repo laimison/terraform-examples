@@ -128,7 +128,7 @@ resource "aws_instance" "server2" {
   ami = "ami-098bb5d92c8886ca1"
   instance_type = "t2.micro"
   key_name = "${var.key_name}"
-  subnet_id = "${aws_subnet.subnet1.id}"
+  subnet_id = "${aws_subnet.subnet2.id}"
   # security_groups = [ "default" ]
   vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_8080_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
 
