@@ -9,7 +9,7 @@ provider "aws" {
 # Declare the data source
 data "aws_availability_zones" "available" {}
 
-# Create S3 bucket to elb logs
+# Create S3 bucket for elb logs
 data "aws_elb_service_account" "main" {}
 
 
@@ -39,11 +39,27 @@ resource "aws_subnet" "subnet1" {
 
   # interpolation to have dynamic value
   vpc_id = "${aws_vpc.vpc1.id}"
-  cidr_block = "10.0.0.0/16"
+  # cidr_block = "10.0.0.0/16"
+  cidr_block = "10.0.0.0/20"
   map_public_ip_on_launch = true
 
   tags = {
     Name = "subnet1"
+  }
+}
+
+#################################################### SUBNET2 ################################################
+resource "aws_subnet" "subnet2" {
+  # availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  availability_zone = "us-east-1b"
+
+  # interpolation to have dynamic value
+  vpc_id = "${aws_vpc.vpc1.id}"
+  cidr_block = "10.0.32.0/20"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "subnet2"
   }
 }
 
@@ -65,16 +81,16 @@ resource "aws_route" "my_route" {
   gateway_id = "${aws_internet_gateway.gw.id}"
 }
 
-# Adds explicit association to the dedicated subnet (dedicated VPC)
-resource "aws_route_table_association" "my_routes_association" {
-  subnet_id      = "${aws_subnet.subnet1.id}"
-
-  # Use newly created route above
-  # route_table_id = "${aws_route_table.my_routes.id}"
-
-  # Use existing route (which was created with )
-  route_table_id = "${aws_vpc.vpc1.main_route_table_id}"
-}
+# # Adds explicit association to the dedicated subnet (dedicated VPC)
+# resource "aws_route_table_association" "my_routes_association" {
+#   subnet_id      = "${aws_subnet.subnet1.id}"
+#
+#   # Use newly created route above
+#   # route_table_id = "${aws_route_table.my_routes.id}"
+#
+#   # Use existing route (which was created with VPC?)
+#   route_table_id = "${aws_vpc.vpc1.main_route_table_id}"
+# }
 
 #################################################### EC2 ###################################################
 #### SERVER1 ####
