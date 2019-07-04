@@ -29,7 +29,7 @@ Steps to start using it on a fresh AWS account
 ### Update Credentials
 
 ```
-cp variables.tf.example variables.tf
+cp secrets.tf.example secrets.tf
 ```
 
 * Go to AWS console, IAM section

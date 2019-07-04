@@ -5,5 +5,5 @@
 *.tfstate
 *.tfstate.*
 
-# My vars
-variables.tf
+# Secret variables
+secrets.tf
