@@ -37,7 +37,6 @@ resource "aws_subnet" "subnet1" {
 
   # interpolation to have dynamic value
   vpc_id = "${aws_vpc.vpc1.id}"
-  # cidr_block = "10.0.0.0/16"
   cidr_block = "10.0.0.0/20"
   map_public_ip_on_launch = true
 
@@ -53,11 +52,41 @@ resource "aws_subnet" "subnet2" {
 
   # interpolation to have dynamic value
   vpc_id = "${aws_vpc.vpc1.id}"
-  cidr_block = "10.0.32.0/20"
+  cidr_block = "10.0.16.0/20"
   map_public_ip_on_launch = true
 
   tags = {
     Name = "subnet2"
+  }
+}
+
+################################################## SUBNET DB 1 ###############################################
+resource "aws_subnet" "subnet-db-1" {
+  # availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  availability_zone = "us-east-1a"
+
+  # interpolation to have dynamic value
+  vpc_id = "${aws_vpc.vpc1.id}"
+  cidr_block = "10.0.48.0/20"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "subnet-db-1"
+  }
+}
+
+################################################## SUBNET DB 2 ###############################################
+resource "aws_subnet" "subnet-db-2" {
+  # availability_zone = "${data.aws_availability_zones.available.names[0]}"
+  availability_zone = "us-east-1b"
+
+  # interpolation to have dynamic value
+  vpc_id = "${aws_vpc.vpc1.id}"
+  cidr_block = "10.0.64.0/20"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "subnet-db-2"
   }
 }
 
@@ -141,6 +170,56 @@ output "public_dns2" {
   value = aws_instance.server2.public_dns
 }
 
+#### DB SERVER 1 ####
+resource "aws_instance" "server-db-1" {
+  # Check if subnet is in the same zone
+  availability_zone = "us-east-1a"
+  depends_on = ["aws_internet_gateway.gw", "aws_efs_mount_target.my_efs_db_mount"]
+  # Redhat 8
+  ami = "ami-098bb5d92c8886ca1"
+  instance_type = "t2.micro"
+  key_name = "${var.key_name}"
+  subnet_id = "${aws_subnet.subnet-db-1.id}"
+  # security_groups = [ "default" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+
+  user_data = "${data.template_file.init.rendered}"
+
+  tags = {
+    Name = "server-db-1"
+  }
+}
+
+output "db_public_dns" {
+  value = aws_instance.server-db-1.public_dns
+}
+
+#### DB SERVER 2 ####
+resource "aws_instance" "server-db-2" {
+  # Check if subnet is in the same zone
+  availability_zone = "us-east-1b"
+  depends_on = ["aws_internet_gateway.gw"]
+  # Ubuntu 16
+  # ami = "ami-2757f631"
+  # Redhat 8
+  ami = "ami-098bb5d92c8886ca1"
+  instance_type = "t2.micro"
+  key_name = "${var.key_name}"
+  subnet_id = "${aws_subnet.subnet-db-2.id}"
+  # security_groups = [ "default" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+
+  user_data = "${data.template_file.init.rendered}"
+
+  tags = {
+    Name = "server-db-2"
+  }
+}
+
+output "db_public_dns2" {
+  value = aws_instance.server-db-2.public_dns
+}
+
 ################################################### EBS ####################################################
 #### SERVER1 ####
 resource "aws_ebs_volume" "my_ebs_volume" {
@@ -188,7 +267,7 @@ resource "aws_volume_attachment" "volume_attachment2" {
 }
 
 ################################################### EFS ####################################################
-#### SERVER1 ####
+#### APP SERVER 1 ####
 resource "aws_efs_file_system" "my_efs" {
   encrypted = false
   performance_mode = "generalPurpose"
@@ -210,6 +289,29 @@ resource "aws_efs_mount_target" "my_efs_mount" {
 
 output "efs_dns_name" {
   value = "${aws_efs_mount_target.my_efs_mount.dns_name}"
+}
+
+#### DB SERVER 1 ####
+resource "aws_efs_file_system" "my_efs_db" {
+  encrypted = false
+  performance_mode = "generalPurpose"
+  throughput_mode = "bursting"
+
+  # This parameter valid only when using provisioned throughput_mode
+  # provisioned_throughput_in_mibps = 100
+
+  tags = {
+    Name = "my_efs_db"
+  }
+}
+
+resource "aws_efs_mount_target" "my_efs_db_mount" {
+  file_system_id = "${aws_efs_file_system.my_efs_db.id}"
+  subnet_id      = "${aws_subnet.subnet-db-1.id}"
+}
+
+output "efs_db_dns_name" {
+  value = "${aws_efs_mount_target.my_efs_db_mount.dns_name}"
 }
 
 #################################################### S3 ####################################################
