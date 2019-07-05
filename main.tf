@@ -12,7 +12,8 @@ provider "template" {
 }
 
 ############################################ VARIABLES FOR MODULES ##########################################
-# A note that secret variables are in secrets.tf file
+# A note that secret variables are in secrets.tf
+# Non secret variables are here:
 
 variable "test" {
   type = string
@@ -20,7 +21,7 @@ variable "test" {
 }
 
 ################################################### MODULES #################################################
-# When modifying modules, you need to run terraform init
+# Quick note - when you modify the modules, you need to run terraform init
 
 module "services" {
   source = "./modules/services"
