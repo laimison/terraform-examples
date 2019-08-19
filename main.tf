@@ -29,6 +29,11 @@ module "services" {
   key_name = "${var.key_name}"
 }
 
+module "route53" {
+  source = "./modules/route53"
+  vpc1_id = "${module.services.vpc1_id}"
+}
+
 # module "next_example" {
 #   source = "./modules/next_example"
 #   input_test = "${module.services.output_test}"

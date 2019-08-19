@@ -23,7 +23,9 @@ data "template_file" "init" {
 resource "aws_vpc" "vpc1" {
   cidr_block = "10.0.0.0/16"
   instance_tenancy = "default"
+
   enable_dns_hostnames = true
+  enable_dns_support   = true
 
   tags = {
     Name = "vpc1"
@@ -131,7 +133,7 @@ resource "aws_instance" "server1" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet1.id}"
   # security_groups = [ "default" ]
-  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_8080_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_icmp_from_everywhere.id}", "${aws_security_group.allow_8080_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
 
   user_data = "${data.template_file.init.rendered}"
 
@@ -157,7 +159,7 @@ resource "aws_instance" "server2" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet2.id}"
   # security_groups = [ "default" ]
-  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_8080_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_icmp_from_everywhere.id}", "${aws_security_group.allow_8080_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
 
   user_data = "${data.template_file.init.rendered}"
 
@@ -181,7 +183,7 @@ resource "aws_instance" "server-db-1" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet-db-1.id}"
   # security_groups = [ "default" ]
-  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_icmp_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
 
   user_data = "${data.template_file.init.rendered}"
 
@@ -207,7 +209,7 @@ resource "aws_instance" "server-db-2" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.subnet-db-2.id}"
   # security_groups = [ "default" ]
-  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
+  vpc_security_group_ids = [ "${aws_security_group.allow_ssh_from_everywhere.id}", "${aws_security_group.allow_icmp_from_everywhere.id}", "${aws_security_group.allow_internet.id}", "${aws_vpc.vpc1.default_security_group_id}" ]
 
   user_data = "${data.template_file.init.rendered}"
 
@@ -435,6 +437,27 @@ resource "aws_security_group" "allow_ssh_from_everywhere" {
   }
 }
 
+resource "aws_security_group" "allow_icmp_from_everywhere" {
+  name        = "allow_icmp_from_everywhere"
+  description = "Allow ICMP from everywhere"
+  # vpc_id      = "vpc-e51f859f"
+  vpc_id      = "${aws_vpc.vpc1.id}"
+
+  # Inline rule
+  ingress {
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    # Please restrict your ingress to only necessary IPs and ports.
+    # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
+    cidr_blocks = [ "0.0.0.0/0" ] # add a CIDR block here
+  }
+
+  tags = {
+    Name = "allow_ssh_from_everywhere"
+  }
+}
+
 resource "aws_security_group" "allow_internet" {
   name        = "allow_internet"
   description = "allow_internet"
@@ -516,3 +539,7 @@ resource "aws_security_group" "allow_8080_from_everywhere" {
 # output "output_test" {
 #   value = "${digitalocean_droplet.db.ipv4_address}"
 # }
+
+output "vpc1_id" {
+  value = "${aws_vpc.vpc1.id}"
+}

@@ -70,6 +70,20 @@ or useful for tests to start from scratch - and take a break :)
 terraform destroy -auto-approve && terraform apply -auto-approve
 ```
 
+## Apply specific module
+
+```
+terraform apply -target=module.route53
+```
+
+P.S. as of Aug, 2019, Route53 is experimental and hardcoded
+
+## Install a new module
+
+```
+terraform init
+```
+
 ## How ELB works
 
 ```
